@@ -1,0 +1,116 @@
+# -----------------------------------------------------------------------------
+# Dependencies
+# -----------------------------------------------------------------------------
+node_modules/
+**/node_modules/
+
+# -----------------------------------------------------------------------------
+# Environment variables and secrets
+# Keep sanitized examples in Git.
+# -----------------------------------------------------------------------------
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets/
+.secrets/
+
+# -----------------------------------------------------------------------------
+# Compiled output and generated bundles
+# -----------------------------------------------------------------------------
+dist/
+**/dist/
+build/
+**/build/
+out/
+**/out/
+.output/
+**/.output/
+*.tsbuildinfo
+
+# -----------------------------------------------------------------------------
+# Generated presentations and renderer output
+# -----------------------------------------------------------------------------
+renderer/output/*
+!renderer/output/.gitkeep
+*.tmp.pptx
+*.tmp.pdf
+
+# -----------------------------------------------------------------------------
+# Test output and coverage
+# -----------------------------------------------------------------------------
+coverage/
+**/coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+
+# -----------------------------------------------------------------------------
+# Framework and tool caches
+# -----------------------------------------------------------------------------
+.vite/
+**/.vite/
+.cache/
+**/.cache/
+.turbo/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.sites-runtime/
+
+# Local n8n runtime data and credentials. Exported workflow JSON remains tracked.
+.n8n/
+n8n_data/
+
+# -----------------------------------------------------------------------------
+# Logs, process state, and diagnostics
+# -----------------------------------------------------------------------------
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.pid
+*.pid.lock
+*.seed
+
+# -----------------------------------------------------------------------------
+# Local development overrides and temporary files
+# -----------------------------------------------------------------------------
+docker-compose.override.yml
+*.local
+tmp/
+temp/
+.tmp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# -----------------------------------------------------------------------------
+# Editors and operating systems
+# -----------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+*.code-workspace

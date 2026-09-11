@@ -1,0 +1,25 @@
+:root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #f6f7fb; background: #080b14; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+main { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, .85fr); }
+.workspace { padding: clamp(2rem, 6vw, 5rem); display: flex; flex-direction: column; justify-content: center; }
+header { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
+.mark { width: 48px; height: 48px; display: grid; place-items: center; background: #7c5cff; border-radius: 14px; font-weight: 800; }
+h1 { margin: 0; font-size: 1.25rem; } header p { margin: .25rem 0 0; color: #8e95aa; }
+form { max-width: 780px; }
+label { display: grid; gap: .65rem; color: #c7cbda; font-size: .92rem; font-weight: 650; }
+textarea, input { width: 100%; color: #f6f7fb; background: #111627; border: 1px solid #272e43; border-radius: 12px; padding: 1rem; font: inherit; line-height: 1.5; outline: none; }
+textarea { min-height: 210px; resize: vertical; }
+textarea:focus, input:focus { border-color: #7c5cff; box-shadow: 0 0 0 3px #7c5cff22; }
+.row { display: flex; gap: 1rem; margin-top: 1rem; } .row label:first-child { width: 110px; } .grow { flex: 1; }
+button { margin-top: 1.25rem; width: 100%; border: 0; border-radius: 12px; padding: 1rem; background: #7c5cff; color: white; font: inherit; font-weight: 750; cursor: pointer; }
+button:disabled { opacity: .65; cursor: wait; }
+.result { max-width: 780px; margin-top: 1rem; padding: 1rem; border-radius: 12px; background: #111627; display: flex; justify-content: space-between; gap: 1rem; }
+.result.error { color: #ff9a9a; } .result a { color: #b9aaff; font-weight: 700; }
+aside { background: linear-gradient(145deg, #17112b, #0f1934); padding: clamp(2rem, 5vw, 4rem); display: flex; flex-direction: column; justify-content: center; border-left: 1px solid #252b40; }
+.eyebrow { color: #9a83ff; font-size: .78rem; letter-spacing: .14em; font-weight: 800; }
+h2 { font-size: clamp(2.2rem, 4vw, 4.3rem); line-height: .98; letter-spacing: -.04em; margin: 1rem 0 3rem; }
+ol { padding: 0; margin: 0; list-style: none; display: grid; gap: 1.5rem; }
+li { display: flex; gap: 1rem; align-items: center; color: #aeb5c9; } li b { color: #7257ec; font-size: 1.35rem; } li strong { display: block; color: white; margin-bottom: .2rem; }
+@media (max-width: 800px) { main { grid-template-columns: 1fr; } aside { border-left: 0; border-top: 1px solid #252b40; } .row { flex-direction: column; } .row label:first-child { width: 100%; } }
+

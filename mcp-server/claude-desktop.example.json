@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "presentflow": {
+      "command": "node",
+      "args": ["/absolute/path/to/presentation-automation/mcp-server/dist/index.js"],
+      "env": {
+        "N8N_WEBHOOK_URL": "https://presentflow.app.n8n.cloud/webhook/generate-presentation",
+        "WORKFLOW_API_KEY": "replace-me"
+      }
+    }
+  }
+}
+

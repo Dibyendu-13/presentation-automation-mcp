@@ -1,0 +1,56 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+      RENDERER_URL: http://renderer:3001
+      PUBLIC_RENDERER_URL: http://localhost:3001
+      WORKFLOW_API_KEY: ${WORKFLOW_API_KEY:-change-me}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n:/workflows:ro
+    depends_on:
+      - renderer
+
+  renderer:
+    build:
+      context: .
+      dockerfile: renderer/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      RENDERER_PORT: 3001
+      PUBLIC_RENDERER_URL: http://localhost:3001
+    volumes:
+      - ./renderer/output:/app/renderer/output
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_N8N_WEBHOOK_URL: http://localhost:5678/webhook/generate-presentation
+    ports:
+      - "3000:80"
+    depends_on:
+      - n8n
+
+  mcp-server:
+    build:
+      context: .
+      dockerfile: mcp-server/Dockerfile
+    environment:
+      N8N_WEBHOOK_URL: http://n8n:5678/webhook/generate-presentation
+      WORKFLOW_API_KEY: ${WORKFLOW_API_KEY:-change-me}
+    depends_on:
+      - n8n
+    profiles: ["mcp"]
+
+volumes:
+  n8n_data:
+

@@ -1,0 +1,91 @@
+{
+  "name": "PresentFlow - Generate Presentation",
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "generate-presentation", "responseMode": "responseNode", "options": {} },
+      "id": "webhook",
+      "name": "Generate Presentation",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-720, 0],
+      "webhookId": "generate-presentation"
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = $json.body ?? $json;\nif (!b.content || typeof b.content !== 'string') throw new Error('content is required');\nconst nSlides = Math.max(3, Math.min(15, Number(b.nSlides || 6)));\nreturn [{ json: { content: b.content.trim(), instructions: String(b.instructions || ''), nSlides, tone: b.tone || 'professional', theme: ['midnight','paper'].includes(b.theme) ? b.theme : 'midnight' } }];"
+      },
+      "id": "validate",
+      "name": "Validate request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-480, 0]
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "modelId": { "__rl": true, "value": "gpt-4.1-mini", "mode": "list", "cachedResultName": "gpt-4.1-mini" },
+        "messages": { "values": [
+          { "role": "system", "content": "You create concise presentation specifications. Return JSON only. The response must contain title, theme, and slides. Each slide has type (title, content, two-column, or closing), title, optional subtitle, bullets, and optional left/right arrays. Respect the requested slide count exactly. Use title for the first slide and closing for the last. Keep bullets under 18 words." },
+          { "content": "Topic/content: {{$json.content}}\nInstructions: {{$json.instructions}}\nSlides: {{$json.nSlides}}\nTone: {{$json.tone}}\nTheme: {{$json.theme}}" }
+        ] },
+        "options": { "responseFormat": "json_object", "temperature": 0.4 }
+      },
+      "id": "llm",
+      "name": "Generate structured deck",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [-230, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.message?.content ?? $json.content ?? $json.text ?? $json;\nconst deck = typeof raw === 'string' ? JSON.parse(raw) : raw;\nreturn [{ json: deck }];"
+      },
+      "id": "parse",
+      "name": "Parse deck JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [20, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.RENDERER_URL || 'http://renderer:3001'}}/render",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{JSON.stringify($json)}}",
+        "options": {}
+      },
+      "id": "render",
+      "name": "Render PPTX",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [270, 0]
+    },
+    {
+      "parameters": { "respondWith": "json", "responseBody": "={{$json}}", "options": {} },
+      "id": "respond",
+      "name": "Return download URL",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Generate Presentation": { "main": [[{ "node": "Validate request", "type": "main", "index": 0 }]] },
+    "Validate request": { "main": [[{ "node": "Generate structured deck", "type": "main", "index": 0 }]] },
+    "Generate structured deck": { "main": [[{ "node": "Parse deck JSON", "type": "main", "index": 0 }]] },
+    "Parse deck JSON": { "main": [[{ "node": "Render PPTX", "type": "main", "index": 0 }]] },
+    "Render PPTX": { "main": [[{ "node": "Return download URL", "type": "main", "index": 0 }]] }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "versionId": "2d87115e-e977-46d3-b55c-51f415ee3f61",
+  "meta": { "templateCredsSetupCompleted": false },
+  "tags": []
+}
+
