@@ -45,7 +45,7 @@ file creation, and download behavior in conventional code.
 ```text
 ┌──────────────────┐                         ┌──────────────────┐
 │ React frontend   │                         │ Claude Desktop   │
-│ Human interface │                         │ MCP client       │
+│ Human interface  │                         │ MCP client       │
 └────────┬─────────┘                         └────────┬─────────┘
          │ HTTPS                                      │ stdio
          │                                            ▼
