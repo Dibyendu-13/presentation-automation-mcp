@@ -64,12 +64,7 @@
         272,
         -64
       ],
-      "credentials": {
-        "openAiApi": {
-          "id": "3eMaQ8ANRus4h7Yy",
-          "name": "OpenAI account 2"
-        }
-      }
+      "credentials": {}
     },
     {
       "parameters": {
@@ -87,13 +82,17 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://9a97-103-39-129-216.ngrok-free.app/render",
+        "url": "={{ $vars.RENDERER_URL.replace(/\\/$/, '') + '/render' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Content-Type",
               "value": "application/json"
+            },
+            {
+              "name": "ngrok-skip-browser-warning",
+              "value": "true"
             }
           ]
         },

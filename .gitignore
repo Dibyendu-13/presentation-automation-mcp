@@ -72,6 +72,9 @@ blob-report/
 .n8n/
 n8n_data/
 
+# Private recording notes used only while preparing the demo.
+docs/demo-script.md
+
 # -----------------------------------------------------------------------------
 # Logs, process state, and diagnostics
 # -----------------------------------------------------------------------------
