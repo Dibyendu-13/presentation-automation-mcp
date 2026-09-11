@@ -2,90 +2,201 @@
   "name": "PresentFlow - Generate Presentation",
   "nodes": [
     {
-      "parameters": { "httpMethod": "POST", "path": "generate-presentation", "responseMode": "responseNode", "options": {} },
-      "id": "webhook",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-presentation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "3548988e-1a72-40b0-8ebc-59d2f4059762",
       "name": "Generate Presentation",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [-720, 0],
+      "position": [
+        -224,
+        -64
+      ],
       "webhookId": "generate-presentation"
     },
     {
       "parameters": {
         "jsCode": "const b = $json.body ?? $json;\nif (!b.content || typeof b.content !== 'string') throw new Error('content is required');\nconst nSlides = Math.max(3, Math.min(15, Number(b.nSlides || 6)));\nreturn [{ json: { content: b.content.trim(), instructions: String(b.instructions || ''), nSlides, tone: b.tone || 'professional', theme: ['midnight','paper'].includes(b.theme) ? b.theme : 'midnight' } }];"
       },
-      "id": "validate",
+      "id": "afdeef02-d72c-4e72-9149-e8f45b7b487e",
       "name": "Validate request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-480, 0]
+      "position": [
+        32,
+        -64
+      ]
     },
     {
       "parameters": {
-        "resource": "text",
-        "operation": "message",
-        "modelId": { "__rl": true, "value": "gpt-4.1-mini", "mode": "list", "cachedResultName": "gpt-4.1-mini" },
-        "messages": { "values": [
-          { "role": "system", "content": "You create concise presentation specifications. Return JSON only. The response must contain title, theme, and slides. Each slide has type (title, content, two-column, or closing), title, optional subtitle, bullets, and optional left/right arrays. Respect the requested slide count exactly. Use title for the first slide and closing for the last. Keep bullets under 18 words." },
-          { "content": "Topic/content: {{$json.content}}\nInstructions: {{$json.instructions}}\nSlides: {{$json.nSlides}}\nTone: {{$json.tone}}\nTheme: {{$json.theme}}" }
-        ] },
-        "options": { "responseFormat": "json_object", "temperature": 0.4 }
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI",
+          "cachedResultUrl": ""
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You create concise presentation specifications. Return JSON only. The response must contain title, theme, and slides. Each slide has type (title, content, two-column, or closing), title, optional subtitle, bullets, and optional left/right arrays. Respect the requested slide count exactly. Use title for the first slide and closing for the last. Keep bullets under 18 words.",
+              "role": "system"
+            },
+            {
+              "content": "={{ `Topic/content: ${$json.content}\nInstructions: ${$json.instructions}\nSlides: ${$json.nSlides}\nTone: ${$json.tone}\nTheme: ${$json.theme}` }}",
+              "role": "=user"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.4
+        }
       },
-      "id": "llm",
+      "id": "47583f49-87bf-4f24-9ec2-2f3f8a627a19",
       "name": "Generate structured deck",
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
-      "position": [-230, 0]
+      "position": [
+        272,
+        -64
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "3eMaQ8ANRus4h7Yy",
+          "name": "OpenAI account 2"
+        }
+      }
     },
     {
       "parameters": {
-        "jsCode": "const raw = $json.message?.content ?? $json.content ?? $json.text ?? $json;\nconst deck = typeof raw === 'string' ? JSON.parse(raw) : raw;\nreturn [{ json: deck }];"
+        "jsCode": "const raw =\n  $json.message?.content ??\n  $json.content ??\n  $json.text ??\n  $json;\n\nif (typeof raw !== \"string\") {\n  return [{ json: raw }];\n}\n\nconst start = raw.indexOf(\"{\");\nconst end = raw.lastIndexOf(\"}\");\n\nif (start === -1 || end === -1) {\n  throw new Error(\"The model response does not contain a JSON object\");\n}\n\nconst cleaned = raw.slice(start, end + 1);\nconst deck = JSON.parse(cleaned);\n\nif (!deck.title || !Array.isArray(deck.slides)) {\n  throw new Error(\"Invalid presentation structure\");\n}\n\nreturn [{ json: deck }];"
       },
-      "id": "parse",
+      "id": "c1953369-0f18-4d8d-bb4d-bf4049397a4e",
       "name": "Parse deck JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [20, 0]
+      "position": [
+        544,
+        -64
+      ]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "={{$env.RENDERER_URL || 'http://renderer:3001'}}/render",
+        "url": "https://9a97-103-39-129-216.ngrok-free.app/render",
         "sendHeaders": true,
-        "headerParameters": { "parameters": [{ "name": "Content-Type", "value": "application/json" }] },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
         "body": "={{JSON.stringify($json)}}",
         "options": {}
       },
-      "id": "render",
+      "id": "ab03c232-044d-4ef7-8fb5-bc2908efa5fb",
       "name": "Render PPTX",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [270, 0]
+      "position": [
+        784,
+        -64
+      ]
     },
     {
-      "parameters": { "respondWith": "json", "responseBody": "={{$json}}", "options": {} },
-      "id": "respond",
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {}
+      },
+      "id": "2769fabc-af6d-4e4e-bf15-2483bacb31d9",
       "name": "Return download URL",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
-      "position": [520, 0]
+      "position": [
+        1040,
+        -64
+      ]
     }
   ],
-  "connections": {
-    "Generate Presentation": { "main": [[{ "node": "Validate request", "type": "main", "index": 0 }]] },
-    "Validate request": { "main": [[{ "node": "Generate structured deck", "type": "main", "index": 0 }]] },
-    "Generate structured deck": { "main": [[{ "node": "Parse deck JSON", "type": "main", "index": 0 }]] },
-    "Parse deck JSON": { "main": [[{ "node": "Render PPTX", "type": "main", "index": 0 }]] },
-    "Render PPTX": { "main": [[{ "node": "Return download URL", "type": "main", "index": 0 }]] }
-  },
   "pinData": {},
-  "settings": { "executionOrder": "v1" },
-  "active": false,
-  "versionId": "2d87115e-e977-46d3-b55c-51f415ee3f61",
-  "meta": { "templateCredsSetupCompleted": false },
+  "connections": {
+    "Generate Presentation": {
+      "main": [
+        [
+          {
+            "node": "Validate request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate request": {
+      "main": [
+        [
+          {
+            "node": "Generate structured deck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate structured deck": {
+      "main": [
+        [
+          {
+            "node": "Parse deck JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse deck JSON": {
+      "main": [
+        [
+          {
+            "node": "Render PPTX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render PPTX": {
+      "main": [
+        [
+          {
+            "node": "Return download URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "906c4fa3-badf-4cb0-9f0b-5d6e155f7038",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "09db726764561e3fe55202a678381d024ee53cbe452d9087bf4f3cf549379c35"
+  },
+  "nodeGroups": [],
+  "id": "3d6NeQbuOdjS9ZFp",
   "tags": []
 }
-
