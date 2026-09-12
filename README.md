@@ -9,6 +9,10 @@ The project takes inspiration from Presenton's staged pipeline: generate content
 first, map it into a constrained presentation structure, and keep file rendering
 deterministic.
 
+## Demo
+
+[Watch the end-to-end Loom walkthrough](https://www.loom.com/share/2d2b0b324e0941999508649a246c5481).
+
 ## Demo architecture
 
 ```text
