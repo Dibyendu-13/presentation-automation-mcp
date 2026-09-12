@@ -111,6 +111,24 @@ curl https://YOUR-NGROK-URL/health
 
 The free ngrok URL remains available only while that tunnel session is running.
 
+### Stable demo URL with Render.com
+
+The repository includes `render.yaml` and a production Dockerfile. To deploy the
+renderer as a Render Web Service:
+
+1. Open the Render Dashboard and select **New → Blueprint**.
+2. Connect this GitHub repository.
+3. Render reads `render.yaml` and creates `presentflow-renderer`.
+4. Wait for `/health` to pass, then copy the generated `onrender.com` URL.
+5. Set the n8n variable `RENDERER_URL` to that origin and republish the workflow.
+
+The renderer automatically uses Render's assigned `PORT` and
+`RENDER_EXTERNAL_URL`; no manual renderer environment variable is required.
+
+Render's free filesystem is ephemeral. Generated PPTX files remain downloadable
+until the service sleeps, restarts, or redeploys. Production file delivery should
+use object storage such as S3 or Cloudflare R2.
+
 ## 3. Import and configure the n8n workflow
 
 1. Import `n8n/presentation-workflow.json` into n8n.
@@ -268,8 +286,8 @@ and production evolution plan.
 
 ## Prototype trade-off
 
-For the assessment, the renderer runs locally and is exposed through ngrok. This
-proves the complete cloud-to-local workflow without adding deployment and storage
-infrastructure. A production implementation would deploy the renderer behind a
-stable HTTPS origin, queue long-running jobs, and store generated presentations
-in object storage using signed, expiring URLs.
+For local development, the renderer can run on a Mac and use ngrok. For the
+submitted demo, the same renderer can run as a Render Web Service with a stable
+HTTPS origin. Render's free local filesystem remains temporary, so a production
+implementation would queue long-running jobs and store presentations in object
+storage using signed, expiring URLs.

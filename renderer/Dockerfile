@@ -1,8 +1,8 @@
 FROM node:20-alpine AS build
 WORKDIR /app
-COPY package.json tsconfig.base.json ./
+COPY package.json package-lock.json tsconfig.base.json ./
 COPY renderer/package.json renderer/package.json
-RUN npm install --workspace renderer
+RUN npm ci --workspace renderer
 COPY renderer renderer
 RUN npm run build --workspace renderer
 
@@ -13,4 +13,3 @@ COPY --from=build /app/renderer/dist renderer/dist
 RUN mkdir -p renderer/output
 EXPOSE 3001
 CMD ["node", "renderer/dist/server.js"]
-

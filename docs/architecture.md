@@ -76,8 +76,9 @@ file creation, and download behavior in conventional code.
                      Downloadable PPTX URL
 ```
 
-During local development, ngrok exposes the renderer to n8n Cloud. This tunnel is
-an infrastructure bridge only. It does not contain presentation logic.
+During local development, ngrok can expose the renderer to n8n Cloud. The demo
+renderer can also run as a Render.com Web Service with a stable HTTPS origin.
+Neither option contains presentation logic; they only host the renderer API.
 
 ## Component responsibilities
 
@@ -208,7 +209,7 @@ request sizes, scan uploaded assets, and issue short-lived download URLs.
 | PptxGenJS instead of browser export | Low memory use, fast startup, and editable native text | Less CSS freedom than Presenton's HTML renderer | Keep native PPTX for editability; add HTML rendering only for designs that need it |
 | Four layouts and two themes | Predictable output within a one-day assessment | Less design variety than Presenton | Add charts, images and reusable template packs incrementally |
 | Synchronous webhook | Small API surface and straightforward frontend/MCP clients | Long generations can hit request timeouts | Queue jobs and expose `create` plus `get_status` operations |
-| Local renderer through ngrok | Proves the cloud-to-local integration without deployment overhead | URL is temporary, shows a free-tier warning, and requires the developer machine | Deploy the renderer behind a stable HTTPS domain |
+| ngrok locally or Render.com for the demo | Supports fast local iteration and a stable hosted demo URL using the same container | ngrok is temporary; Render free services sleep and use an ephemeral filesystem | Use paid compute plus object storage behind a stable HTTPS domain |
 | Local filesystem output | Minimal infrastructure for the prototype | Files disappear when the process or host is removed and cleanup is manual | Store PPTX files in S3/R2 and return signed, expiring URLs |
 | Local stdio MCP server | Simple Claude Desktop integration with no public MCP endpoint | Requires local installation and configuration | Offer Streamable HTTP MCP with OAuth for remote clients |
 | One shared n8n workflow | Frontend and Claude always use the same business logic | A workflow failure affects both entry points | Add queue isolation, retries, monitoring and idempotency keys |

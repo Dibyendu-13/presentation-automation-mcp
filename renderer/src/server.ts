@@ -12,9 +12,11 @@ const app = express();
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 const rootEnvPath = path.resolve(currentDir, "../../.env");
 const envResult = config({ path: rootEnvPath });
-const port = Number(process.env.RENDERER_PORT || 3001);
+const port = Number(process.env.PORT || process.env.RENDERER_PORT || 3001);
 const publicUrl = (
-  process.env.PUBLIC_RENDERER_URL || `http://localhost:${port}`
+  process.env.PUBLIC_RENDERER_URL ||
+  process.env.RENDER_EXTERNAL_URL ||
+  `http://localhost:${port}`
 ).replace(/\/$/, "");
 const outputDir = path.resolve(currentDir, "../output");
 await mkdir(outputDir, { recursive: true });
@@ -74,7 +76,7 @@ app.use((error: unknown, _req: express.Request, res: express.Response, _next: ex
   res.status(400).json({ message: error instanceof Error ? error.message : "Unable to render presentation" });
 });
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log("[renderer] Server ready", {
     port,
     healthUrl: `http://localhost:${port}/health`,

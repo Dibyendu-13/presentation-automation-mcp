@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: presentflow-renderer
+    runtime: docker
+    plan: free
+    dockerfilePath: ./renderer/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production

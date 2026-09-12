@@ -1,5 +1,9 @@
-import pptxgen from "pptxgenjs";
+import pptxgenModule from "pptxgenjs";
 import type { DeckSpec } from "./types.js";
+
+// PptxGenJS 4 ships a CommonJS-shaped declaration behind an ESM export map.
+// Normalize that declaration at this boundary so NodeNext builds remain stable.
+const PptxGenJS = pptxgenModule as unknown as new () => any;
 
 const themes = {
   midnight: { bg: "0B1020", text: "F7F8FC", muted: "A8B0C7", accent: "7C5CFC" },
@@ -12,7 +16,7 @@ export async function renderDeck(deck: DeckSpec, outputPath: string) {
     theme: deck.theme,
     slideCount: deck.slides.length,
   });
-  const pptx = new pptxgen();
+  const pptx = new PptxGenJS();
   pptx.layout = "LAYOUT_WIDE";
   pptx.author = "PresentFlow";
   pptx.subject = deck.title;
@@ -60,7 +64,9 @@ export async function renderDeck(deck: DeckSpec, outputPath: string) {
   console.log("[renderer] PPTX file written", { outputPath });
 }
 
-function addBullets(slide: pptxgen.Slide, bullets: string[], x: number, y: number, w: number, c: typeof themes.midnight) {
+type PresentationSlide = ReturnType<InstanceType<typeof PptxGenJS>["addSlide"]>;
+
+function addBullets(slide: PresentationSlide, bullets: string[], x: number, y: number, w: number, c: typeof themes.midnight) {
   console.log("[renderer] Adding bullet content", { bulletCount: bullets.length });
   const runs = bullets.flatMap((text) => [
     { text, options: { bullet: { indent: 18 }, breakLine: true, hanging: 4 } },
