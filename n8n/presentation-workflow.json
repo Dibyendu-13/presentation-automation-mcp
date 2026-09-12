@@ -82,17 +82,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $vars.RENDERER_URL.replace(/\\/$/, '') + '/render' }}",
+        "url": "https://presentation-automation-mcp.onrender.com/render",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Content-Type",
               "value": "application/json"
-            },
-            {
-              "name": "ngrok-skip-browser-warning",
-              "value": "true"
             }
           ]
         },
@@ -100,12 +96,17 @@
         "contentType": "raw",
         "rawContentType": "application/json",
         "body": "={{JSON.stringify($json)}}",
-        "options": {}
+        "options": {
+          "timeout": 120000
+        }
       },
       "id": "ab03c232-044d-4ef7-8fb5-bc2908efa5fb",
       "name": "Render PPTX",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
+      "retryOnFail": true,
+      "maxTries": 4,
+      "waitBetweenTries": 15000,
       "position": [
         784,
         -64
